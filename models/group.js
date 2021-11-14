@@ -126,7 +126,7 @@ class Group {
       throw new BadRequestError("user already in group");
 
     const query = `
-      INSERT INTO groups_users(group_id, user_id, is_driver)
+      INSERT INTO groups_users(group_id, user_id)
       VALUES ($1, (
         SELECT id FROM users WHERE email = $2
       ), $3)
@@ -231,8 +231,6 @@ class Group {
     return updatedGroup.rows[0]
 
   }
-
- 
   static async fetchGroupByGroupId(groupId, showImgUrls = true) {
     if (!groupId) throw new BadRequestError('no groupid')
     if (isNaN(groupId))
@@ -249,7 +247,7 @@ class Group {
 
     // get users for group
     let users = await db.query(`
-        SELECT users.*, groups_users.is_driver FROM users 
+        SELECT users.* FROM users 
         JOIN groups_users ON groups_users.user_id = users.id
          WHERE groups_users.group_id = $1
     `, [groupId])
@@ -261,7 +259,6 @@ class Group {
       SELECT users.imgurl FROM users
       JOIN groups_users ON groups_users.user_id = users.id
       WHERE groups_users.group_id = $1
-      AND is_driver = true
     `, [groupId])
     // console.log('qer',query);
     // console.log('gid',groupId);
@@ -299,108 +296,9 @@ class Group {
 
 
   }
-  // bulletin org
-  static async getOrgTripsByEmail(email) {
-
-    if (!email || typeof email !== 'string')
-      throw new BadRequestError('string needed for email')
-    if (email.indexOf('@') < 0)
-      throw new BadRequestError('no @')
-
-    const org = email.substr(email.indexOf('@') + 1)
-    let orgGroups = await db.query(
-      `SELECT groups.id FROM
-       groups_users 
-      JOIN groups
-      ON groups_users.group_id = groups.id
-      WHERE groups_users.is_driver = true
-      AND groups.org_name = $1`
-      , [org]);
-    orgGroups = orgGroups.rows
-
-    console.log('orgGroups');
-    console.log(orgGroups);
-
-    // orgGroups = this.sanitizeTripsByOrg(orgGroups, email)
-
-    let orgTrips = []
-    for (const group of orgGroups) {
-      const newGroup = await this.fetchGroupByGroupId(group.id)
-      orgTrips.push(newGroup)
-    }
-    return orgTrips
-  }
-  // mytrips org
-  static async getOrgTripsForUser(email) {
-    let groups = await this.getGroupsForUser({ email })
-
-    for (const group of groups) {
-      const driverEmail = await this.getDriverEmailByGroupId(group.id)
-      group.email = driverEmail
-    }
-
-    // console.log(groups);
-    groups = this.sanitizeTripsByOrg(groups, email)
-
-    let orgTrips = []
-    for (const group of groups) {
-      const newGroup = await this.fetchGroupByGroupId(group.id)
-      orgTrips.push(newGroup)
-    }
-    return orgTrips
-  }
-  static sanitizeTripsByOrg(trips, email) {
-    const org = email.substring(email.indexOf('@') + 1)
-    trips = trips.filter(g => {
-      // delete g.imgurl
-      // delete g.driverImgUrl
-      // delete g.users
-      // console.log(g);
-      const elemEmail = g.email
-      // console.log(elemEmail);
-
-      const elemOrg = elemEmail.substr(elemEmail.indexOf('@') + 1)
-
-      let a = `comparing '${elemOrg}' with '${org}'`
-      console.log(a.red);
 
 
-      return elemOrg === org
-    })
-    return trips
-  }
-  static async getDriverEmailByGroupId(groupId) {
-    const groupExists = this.doesGroupExist(groupId)
-    if (!groupExists)
-      throw new BadRequestError('group doesn\'t exist')
 
-    let query
-    let id = await db.query(query = `
-      SELECT users.email 
-      FROM groups_users
-      JOIN users
-      ON groups_users.user_id = users.id
-      JOIN groups
-      ON groups_users.group_id = groups.id
-      WHERE groups.id = $1
-      AND groups_users.is_driver = true;
-    `, [groupId])
-    id = id.rows
-    // console.log(query.green);
-    // console.log('gid', groupId);
-    // console.log('id'.green);
-    // console.log(id);
-    if (!id.length)
-      return null
-    if (id.length > 1)
-      return new BadRequestError('more than 1 driver')
-
-    id = id[0].email
-
-    return id
-
-
-  }
   static async doesGroupExist(gid) {
     const groupExists = await db.query(`
         SELECT 1 FROM groups WHERE id = $1

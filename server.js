@@ -8,7 +8,7 @@ const security = require('./middleware/security')
 
 
 const authRoutes = require('./routes/auth')
-// const groupRoutes = require('./routes/group')
+const groupRoutes = require('./routes/group')
 
 const bodyParser = require('body-parser')
 
@@ -25,7 +25,7 @@ app.use(morgan('dev'))
 app.use(security.extractUserFromJwt)
 
 app.use("/auth", authRoutes)
-// app.use("/group", groupRoutes)
+app.use("/group", groupRoutes)
 
 /** Handle 404 errors -- this matches everything */
 app.use((req, res, next) => {
