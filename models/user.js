@@ -40,11 +40,10 @@ class User {
         `A user already exists with email: ${credentials.email}`
       );
     }
-    // const hashedPassword = await bcrypt.hash(
-      //   credentials.password,
-      //   BCRYPT_WORK_FACTOR
-      // );
-    const hashedPassword = credentials.password
+    const hashedPassword = await bcrypt.hash(
+        credentials.password,
+        BCRYPT_WORK_FACTOR
+      );
     const normalizedEmail = credentials.email.toLowerCase();
 
     const userResult = await db.query(
