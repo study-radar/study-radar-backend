@@ -65,8 +65,8 @@ router.post('/addUser', requireAuthenticatedUser, async (req, res, next) => {
 
     const { user } = res.locals
 
-    const { groupId, isDriver } = req.body
-    const result = await Group.addUserToGroup(user, groupId, isDriver ?? false, SHOW_IMG_URLS)
+    const { groupId } = req.body
+    const result = await Group.addUserToGroup(user, groupId, SHOW_IMG_URLS)
     res.status(201).json({ group: result })
   } catch (err) {
     next(err)

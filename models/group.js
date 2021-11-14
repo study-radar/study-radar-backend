@@ -14,7 +14,7 @@ class Group {
     }
     return groups
   }
-  static async getGroupsForUser(user, showImgUrls) {
+  static async getGroupsForUser(user, showImgUrls = true) {
     const { email } = user
     if (!email) throw new BadRequestError("no email man");
     let groups = await db.query(
@@ -100,7 +100,7 @@ class Group {
 
     return insertedGroupDetailed;
   }
-  static async addUserToGroup(user, groupId, isDriver, showImgUrls = true) {
+  static async addUserToGroup(user, groupId, showImgUrls = true) {
 
     groupId = Number(groupId);
     if (isNaN(groupId)) throw new BadRequestError("groupid NaN");
@@ -129,12 +129,12 @@ class Group {
       INSERT INTO groups_users(group_id, user_id)
       VALUES ($1, (
         SELECT id FROM users WHERE email = $2
-      ), $3)
+      ))
       RETURNING *
     `;
     // console.log('q',query,[groupId, email.toString().toLowerCase(), isDriver]);
     const group = await db.query(query,
-      [groupId, email.toString().toLowerCase(), isDriver]);
+      [groupId, email.toString().toLowerCase()]);
     // console.log('group',group.rows);
 
 
@@ -147,8 +147,6 @@ class Group {
   static async removeUserFromGroup(email, groupId) {
     groupId = Number(groupId);
     if (isNaN(groupId)) throw new BadRequestError("groupid NaN");
-
-
 
     if (!email) throw new BadRequestError("no email");
 
@@ -169,6 +167,7 @@ class Group {
       AND group_id = $2;`,
       [email.toString().toLowerCase(), groupId]
     );
+
     if (!userInGroup.rows.length)
       throw new BadRequestError("user not in group");
 
@@ -254,22 +253,10 @@ class Group {
     users = users.rows
     group.users = users
 
-    let query;
-    let driverImgUrl = await db.query(query = `
-      SELECT users.imgurl FROM users
-      JOIN groups_users ON groups_users.user_id = users.id
-      WHERE groups_users.group_id = $1
-    `, [groupId])
-    // console.log('qer',query);
-    // console.log('gid',groupId);
 
-    driverImgUrl = driverImgUrl.rows?.[0]?.imgurl
-    group.driverImgUrl = driverImgUrl || ''
-    // console.log('driv',group.driverImgUrl);
 
 
     if (!showImgUrls) {
-      group.driverImgUrl = ''
       for (const user of group.users)
         user.imgurl = ''
     }
