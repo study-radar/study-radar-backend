@@ -14,12 +14,14 @@ CREATE TABLE groups (
   name TEXT DEFAULT '',
 
   description TEXT DEFAULT '',
+  location TEXT DEFAULT '',
 
   date_time TEXT DEFAULT '',
 
   capacity INTEGER DEFAULT 0,
 
   created_by TEXT DEFAULT '',
+  misc TEXT DEFAULT '',
   created_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

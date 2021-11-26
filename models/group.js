@@ -71,7 +71,9 @@ class Group {
       "description",
       "date_time",
       "capacity",
-      "created_by"
+      "created_by",
+      "location",
+      'misc'
     ];
 
 
@@ -102,7 +104,9 @@ class Group {
   }
   static async addUserToGroup(user, groupId, showImgUrls = true) {
 
+    console.log(groupId);
     groupId = Number(groupId);
+    console.log(groupId);
     if (isNaN(groupId)) throw new BadRequestError("groupid NaN");
 
     const { email } = user;
@@ -167,6 +171,11 @@ class Group {
       AND group_id = $2;`,
       [email.toString().toLowerCase(), groupId]
     );
+    // console.log(`SELECT 1 FROM groups_users 
+    //   WHERE user_id = 
+    //   (SELECT id FROM users WHERE email = $1)
+    //   AND group_id = $2;`,
+    //   [email.toString().toLowerCase(), groupId]);
 
     if (!userInGroup.rows.length)
       throw new BadRequestError("user not in group");
@@ -179,12 +188,13 @@ class Group {
        RETURNING *;
     `, [email.toString().toLowerCase(), groupId])
 
-    const deletedGroup = await db.query(`
-      SELECT * FROM groups
-      WHERE id = $1
-    `, [groupId])
+    return this.fetchGroupByGroupId(groupId)
+    // const deletedGroup = await db.query(`
+    //   SELECT * FROM groups
+    //   WHERE id = $1
+    // `, [groupId])
 
-    return deletedGroup.rows[0];
+    // return deletedGroup.rows[0];
   }
   static async updateGroupInfo(groupId, info) {
     if (groupId == null || info == null)

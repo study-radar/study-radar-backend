@@ -62,7 +62,6 @@ router.post('/create', async (req, res, next) => {
 // add user to group
 router.post('/addUser', requireAuthenticatedUser, async (req, res, next) => {
   try {
-
     const { user } = res.locals
 
     const { groupId } = req.body

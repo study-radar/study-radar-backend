@@ -19,8 +19,8 @@ const jwtFrom = ({ headers }) => {
 const extractUserFromJwt = (req, res, next) => {
   try {
     const token = jwtFrom(req);
-
-
+    // console.log('req',req);
+    console.log('token',token);
     // if token valid
     if (token) {
       res.locals.user = jwt.verify(token, SECRET_KEY);
