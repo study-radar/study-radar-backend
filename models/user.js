@@ -92,7 +92,7 @@ class User {
   static async updateUserInfo(email, info) {
 
 
-    const possibleFields = ['id', 'name', 'email', 'password', 'imgurl', 'created_at', 'about_me', 'phone_number']
+    const possibleFields = ['id', 'name', 'email', 'password', 'imgurl', 'created_at', 'about_me', 'major']
     const variableSets = []
 
 

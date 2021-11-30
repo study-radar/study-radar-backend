@@ -5,6 +5,7 @@ CREATE TABLE users (
   password    TEXT NOT NULL,
 
   imgurl TEXT,
+  major TEXT DEFAULT '',
 
   created_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );
