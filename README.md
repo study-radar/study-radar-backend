@@ -33,6 +33,10 @@ Your events will show up on your homepage.\
 Find a study group to join or leave a study group by clicking the `EXPLORE` tag on the navbar.\
 Your events will be recorded on the agenda on the right side of the page.
 
+## Potential issues
+
+If you are getting authentication failed when typing in your password to the command line, try adding the `-U postgres` flag.
+
 ## Other notes
 
 This project is the Final Project for UCLA's CS35L Software Construction course. Please feel free to fork and adjust to your needs/wants.
