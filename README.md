@@ -37,6 +37,10 @@ Your events will be recorded on the agenda on the right side of the page.
 
 If you are getting authentication failed when typing in your password to the command line, try adding the `-U postgres` flag.
 
+## Resetting the database
+To reset the database do
+`psql -f studyradar.sql`
+
 ## Other notes
 
 This project is the Final Project for UCLA's CS35L Software Construction course. Please feel free to fork and adjust to your needs/wants.
